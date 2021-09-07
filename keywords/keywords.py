@@ -13,7 +13,7 @@ def mecab_tokenizer(sent):
                 if ('/NNP' in w or '/NNG' in w or '/SL' in w ) ]
     return words
 
-file = urlopen('https://www1.president.go.kr/petitions/598769')
+file = urlopen('https://www1.president.go.kr/petitions/598772')
 bs = BeautifulSoup(file, 'html.parser')
 
 text = bs.findAll('div',{'class':'View_write'})
@@ -39,5 +39,9 @@ summarizer.summarize(sents, topk=10)
 
 print(summarizer.keywords())
 print(summarizer.idx_to_vocab)
+
+
+
+
 
 
