@@ -4,10 +4,12 @@ from textrank import KeywordSummarizer
 
 list_num =598770
 for i in range(100):
-    f = open('D:\Project\project_code\keywords\data/'+str(list_num)+'.csv', "r", encoding="utf-8-sig")
+    f = open('D:\Project\data/'+str(list_num)+'.csv', "r", encoding="utf-8-sig")
+    fi = open('D:\Project/test/'+str(list_num)+'_out.csv', "w", encoding="utf-8-sig")
     data = csv.reader(f)
-    text = next(data)[5]
-    #print(text)
+    data = next(data)[4:]
+    text = data[1]
+    cate = data[0]
 
     mecab = Mecab(dicpath=r"C:\mecab\mecab-ko-dic")
 
@@ -37,7 +39,15 @@ for i in range(100):
     summarizer.summarize(sents, topk=10)
 
 
-    print(summarizer.summarize(sents, topk=10))
+    #print(summarizer.summarize(sents, topk=10))
+    kws = summarizer.summarize(sents, topk=10)
+
+    kw = [kw for kw in kws]
+    list_line = str(list_num) + ","+ cate + ","
+    for k in range(len(kw)):
+        list_line += kw[k][0].split('/')[0] + ","
+    fi.write(list_line)
+    #print(kws)
 
     list_num +=1
 
