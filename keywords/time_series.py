@@ -1,32 +1,52 @@
-import csv
 from collections import Counter
+import pymysql.cursors
+from datetime import date
 
-all_fi =open('D:\Project/test/dictest0913.csv', 'r', encoding="utf-8")
-data = csv.reader(all_fi)
-# next(data)
+connection = pymysql.connect(host='192.168.0.37',
+                             user='root',
+                             password='12345',
+                             db='testbase',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
+except_count = 0
+last_date=date.today()
+word_list=""
+a=[]
+try:
+    with connection.cursor() as cursor:
+        sql = "select subdate,data from daydata"
+        cursor.execute(sql)
+        rows = cursor.fetchall()
 
-# date= ch_data[1]
-# word = ch_data[3:]
-# date = date.split('-')
-# print(date[1])
-# print(word)
+        sql1 = "select subdate,data from daydata order by subdate desc limit 1"
+        cursor.execute(sql1)
+        final_data = cursor.fetchone()
 
-month = [[], [], [], [], [], [], [], [], [], [], [], []]
+        for row in rows:
+            words = row['data']
+            subdate = row['subdate']
 
-for row in data:
-    date = row[1]
-    word = row[3:]
-    date = date.split('-')
-    for mon in range(12):
-        if int(date[1]) == mon:
-            month[mon-1].extend(word)
-        # print(month)
-counts6 =Counter(month[5])
-counts7 =Counter(month[6])
-counts8 =Counter(month[7])
-print(counts6)
-print(counts7)
-print(counts8)
+            if final_data == row:
+                word = word_list.split(',')
+                print(word)
+                print(last_date.month, Counter(word))
 
+            else:
+                if last_date.month == subdate.month:
+                    word_list += words
+                elif last_date.month != subdate.month:
+                    if word_list != "":
+                        word = word_list.split(',')
+                        print(word)
+                        print(last_date.month, Counter(word))
 
+                    word_list = ""
+                    word_list += words
 
+                    # print(subdate.month,word_list)
+
+                a.append((row))
+                last_date = subdate
+
+finally:
+    connecton.close()

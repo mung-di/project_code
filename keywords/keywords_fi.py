@@ -1,29 +1,47 @@
-import csv
 from konlpy.tag import Mecab
 from textrank import KeywordSummarizer
-import os
+import pymysql.cursors
+
+connection = pymysql.connect(host='192.168.0.37',
+                             user='root',
+                             password='12345',
+                             db='testbase',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
+
+
 
 list_number = 598770  # list_number = 청원 글 시작 번호
-file_list = os.listdir('D:\Project\data/')
 
-# list_number = int(file_list[-1].strip('.csv')) #저장된 마지막 글 불러오기 (마지막글부터 새 데이터 받아오기 위함)
 
 except_count = 0  # except_count = 예외 실행 횟수
 
-while except_count <= 30:  # 예외가 10번 실행될때까지 반복
-    try:
 
-        file = open('D:\Project\data/' + str(list_number) + '.csv', "r", encoding="utf-8-sig")
-        fi = open('D:\Project/test/dictest0913.csv', 'a', encoding="utf-8-sig")
-#         all_fi =open('D:\Project/test/all_words_test0910.csv', 'a', encoding="utf-8-sig")
-        data = csv.reader(file)
-        data = next(data)[2:]
-        st_date = data[0]
-        text = data[3]
-        cate = data[2]
+while except_count <= 10:  # 예외가 10번 실행될때까지 반복
+    try:
+        with connection.cursor() as cursor:
+            no = list_number
+            sql = "select no, subdate from petition where no = %s"
+            cursor.execute(sql, (no))
+            row = cursor.fetchone()
+            #print(row)
+            subdate = row['subdate']
+
+            sql_2 = "select rawdata from petitionraw where no = %s"
+            cursor.execute(sql_2, (no))
+            row = cursor.fetchone()
+            content = row['rawdata']
+
+        # file = open('D:\Project\data/' + str(list_number) + '.csv', "r", encoding="utf-8-sig")
+        # fi = open('D:\Project/test/dictest0914.csv', 'a', encoding="utf-8-sig")
+        #         all_fi =open('D:\Project/test/all_words_test0910.csv', 'a', encoding="utf-8-sig")
+#         data = csv.reader(file)
+#         data = next(data)[2:]
+#         st_date = data[0]
+#         text = data[3]
+#         cate = data[2]
 
         mecab = Mecab(dicpath=r"C:\mecab\mecab-ko-dic")
-
 
         def mecab_tokenizer(sent):
             words = mecab.pos(sent, join=True)
@@ -35,37 +53,29 @@ while except_count <= 30:  # 예외가 10번 실행될때까지 반복
                         word_list.append(w)
             return word_list
 
-
-        docs = text.replace("\r", "")
+        docs = content.replace("\r", "")
         docs = docs.replace("\t", "")
         docs = docs.replace("  ", "")
         sents = list(set(docs.split("\n")))
 
-        #형태소 (nnp,nng별 단어 모두 뽑아내기) ,30개만 뽑힘 쓸 필요 없을수도
-        # all_words = KeywordSummarizer(tokenize=mecab_tokenizer, min_count=1, min_cooccurrence=-1)
-        #
-        # aws = all_words.summarize(sents)
-        # aw = [aw for aw in aws]
-        #
-        # aw_line = str(list_number) + "," + st_date + "," + cate + ","  # 글번호, 날짜, 카테고리
-        # for a in range(len(aw)):
-        #     aw_line += aw[a][0].split('/')[0] + ","
-        # all_fi.write(aw_line+"\n")
-
         # 키워드 뽑기
-        summarizer = KeywordSummarizer(tokenize=mecab_tokenizer, min_count=1, min_cooccurrence=2)
+        summarizer = KeywordSummarizer(tokenize=mecab_tokenizer, min_count=2, min_cooccurrence=2)
         kws = summarizer.summarize(sents, topk=10)
         # 키워드저장
         kw = [kw for kw in kws]
-        list_line = str(list_number) + "," + st_date + "," + cate      # 글번호, 날짜, 카테고리
-
+        list_line = ""
         for k in range(len(kw)):
-            list_line += "," + kw[k][0].split('/')[0]
+            list_line += kw[k][0].split('/')[0] + ","
 
-        print(list_line)
-        fi.write(list_line + "\n")
+        print(list_number, list_line)
+
+        # fi.write(list_line + "\n")
+        with connection.cursor() as cursor:
+            cursor.execute("insert into PETITIONDATA values(%s, %s)", (list_number, list_line))
+            connection.commit()
 
         list_number += 1
+        except_count = 0
 
     except Exception as e:
         except_count += 1
