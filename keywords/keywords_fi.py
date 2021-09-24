@@ -13,6 +13,11 @@ connection = pymysql.connect(host='192.168.0.37',
 
 list_number = 598770  # list_number = 청원 글 시작 번호
 
+# sql_6 = "SELECT no FROM PETITION order by no desc limit 1"
+# with connection.cursor() as cursor:
+#     aaa = cursor.execute(sql_6)
+#     _list_number = cursor.fetchone()
+#     list_number = _list_number["no"]
 
 except_count = 0  # except_count = 예외 실행 횟수
 

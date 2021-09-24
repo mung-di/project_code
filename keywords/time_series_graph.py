@@ -32,6 +32,15 @@ try:
                 word = word_list.split(',')
                 print(word)
                 print(last_date.isocalendar()[0],last_date.isocalendar()[1], Counter(word))
+                my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:15]
+                x, y = zip(*my_dict)
+                plt.rcParams['font.family'] = 'Malgun Gothic'
+                plt.gca().invert_yaxis()
+                plt.barh(x, y, color='#0670D9')
+
+                plt.savefig('D:\Project\image' + str(last_date.isocalendar()[0]) + "-" + str(
+                    last_date.isocalendar()[1]) + '.png')
+                plt.close()
 
                 # dt = subdate
                 # print(dt)

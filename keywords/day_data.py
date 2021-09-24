@@ -12,6 +12,17 @@ connection = pymysql.connect(host='192.168.0.37',
 
 list_number = 598770  # list_number = 청원 글 시작 번호
 except_count = 0  # except_count = 예외 실행 횟수
+with connection.cursor() as cursor:
+    sel_date = "SELECT subdate FROM daydata ORDER BY subdate DESC limit 1 "
+    cursor.execute(sel_date)
+    final_date = cursor.fetchone()
+    final_date = str(final_date['subdate'])
+
+
+    sql = "select no, subdate from petition where subdate = %s ORDER BY no DESC"
+    cursor.execute(sql, (final_date))
+    row = cursor.fetchone()
+    list_number = row['no'] + 1
 
 last_date=""
 word_list=""

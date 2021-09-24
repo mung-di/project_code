@@ -11,6 +11,7 @@ connection = pymysql.connect(host='192.168.0.37',
 except_count = 0
 last_date = date.today()
 word_list = ""
+top =[]
 try:
     with connection.cursor() as cursor:
         sql = "select subdate,data from daydata"
@@ -27,8 +28,13 @@ try:
 
             if final_data == row:
                 word = word_list.split(',')
-                print(word)
+
                 print(last_date.month, Counter(word))
+                my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:10]
+                print(my_dict)
+                for k in range(10):
+                    top.append(my_dict[k][0])
+                print(top)
 
             else:
                 if last_date.month == subdate.month:
@@ -36,8 +42,16 @@ try:
                 elif last_date.month != subdate.month:
                     if word_list != "":
                         word = word_list.split(',')
-                        print(word)
+
                         print(last_date.month, Counter(word))
+                        my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:10]
+                        for k in range(10) :
+                            top.append(my_dict[k][0])
+                        print(top)
+                        top=[]
+
+
+
 
                     word_list = ""
                     word_list += words
