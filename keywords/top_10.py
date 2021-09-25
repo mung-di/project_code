@@ -30,7 +30,11 @@ try:
                 word = word_list.split(',')
 
                 print(last_date.month, Counter(word))
-
+                my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:10]
+                print(my_dict)
+                for k in range(10):
+                    top.append(my_dict[k][0])
+                print(top)
 
             else:
                 if last_date.month == subdate.month:
@@ -40,6 +44,11 @@ try:
                         word = word_list.split(',')
 
                         print(last_date.month, Counter(word))
+                        my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:10]
+                        for k in range(10) :
+                            top.append(my_dict[k][0])
+                        print(top)
+                        top=[]
 
 
 
