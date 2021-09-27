@@ -1,7 +1,8 @@
 from collections import Counter
 import pymysql.cursors
 from datetime import date
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import pandas as pd
 
 connection = pymysql.connect(host='192.168.0.37',
                              user='root',
@@ -13,6 +14,7 @@ except_count = 0
 last_date  = date.today()
 word_list = ""
 
+fig = go.Figure()
 
 try:
     with connection.cursor() as cursor:
@@ -30,16 +32,8 @@ try:
 
             if final_data == row:
                 word = word_list.split(',')
-                print(word)
-                print(last_date.isocalendar()[0],last_date.isocalendar()[1], Counter(word))
 
-                # dt = subdate
-                # print(dt)
-                # iso_data = dt.isocalendar()
-                # print(iso_data)
-                # print(iso_data[0])  # year
-                # print(iso_data[1])  # week number
-                # print(iso_data[2])  # week day number
+
 
             else:
                 if last_date.isocalendar()[1] == subdate.isocalendar()[1]:
@@ -48,22 +42,16 @@ try:
                 elif last_date.isocalendar()[1] != subdate.isocalendar()[1]:
                     if word_list != "":
                         word = word_list.split(',')
-                        #print(word)
-                        print(last_date.isocalendar()[0] ,last_date.isocalendar()[1], Counter(word))
+
                         my_dict = sorted(Counter(word).items(), key=lambda x: x[1], reverse=True)[:15]
+                        my_dict.reverse() #그래프 값이 큰 순서대로 넣기
                         x,y = zip(*my_dict)
-                        plt.rcParams['font.family'] = 'Malgun Gothic'
-                        plt.gca().invert_yaxis()
-                        plt.barh(x, y, color='#0670D9')
 
-                        plt.savefig('D:\Project\image'+ str(last_date.isocalendar()[0]) + "-" + str(last_date.isocalendar()[1]) + '.png')
-                        plt.close()
-                        # key = [k for k , v in Counter(word).items() if v >1]
-                        # print(key)
-                        # value = [ v for v , k in key ]
+                        fig = go.Figure(go.Bar(x=y, y=x, orientation='h'))
 
+                        fig.show()
+                        fig.to_json()
 
-                        # plt.plot[Counter(word).keys(),Counter(word).values()]
 
 
                     word_list = ""
