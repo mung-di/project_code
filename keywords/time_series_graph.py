@@ -2,7 +2,7 @@ from collections import Counter
 import pymysql.cursors
 from datetime import date
 import plotly.graph_objects as go
-import pandas as pd
+
 
 connection = pymysql.connect(host='192.168.0.37',
                              user='root',
