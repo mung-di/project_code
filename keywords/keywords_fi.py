@@ -13,11 +13,11 @@ connection = pymysql.connect(host='192.168.0.37',
 
 list_number = 598770  # list_number = 청원 글 시작 번호
 
-# sql_6 = "SELECT no FROM PETITION order by no desc limit 1"
-# with connection.cursor() as cursor:
-#     aaa = cursor.execute(sql_6)
-#     _list_number = cursor.fetchone()
-#     list_number = _list_number["no"]
+fin_no = "SELECT no FROM PETITIONDATA order by no desc limit 1"
+with connection.cursor() as cursor:
+    aaa = cursor.execute(fin_no)
+    _list_number = cursor.fetchone()
+    list_number = _list_number["no"]
 
 except_count = 0  # except_count = 예외 실행 횟수
 
@@ -26,6 +26,7 @@ while except_count <= 10:  # 예외가 10번 실행될때까지 반복
     try:
         with connection.cursor() as cursor:
             no = list_number
+
             sql = "select no, subdate from petition where no = %s"
             cursor.execute(sql, (no))
             row = cursor.fetchone()
