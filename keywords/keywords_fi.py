@@ -38,14 +38,6 @@ while except_count <= 10:  # 예외가 10번 실행될때까지 반복
             row = cursor.fetchone()
             content = row['rawdata']
 
-        # file = open('D:\Project\data/' + str(list_number) + '.csv', "r", encoding="utf-8-sig")
-        # fi = open('D:\Project/test/dictest0914.csv', 'a', encoding="utf-8-sig")
-        #         all_fi =open('D:\Project/test/all_words_test0910.csv', 'a', encoding="utf-8-sig")
-#         data = csv.reader(file)
-#         data = next(data)[2:]
-#         st_date = data[0]
-#         text = data[3]
-#         cate = data[2]
 
         mecab = Mecab(dicpath=r"C:\mecab\mecab-ko-dic")
 
@@ -53,7 +45,6 @@ while except_count <= 10:  # 예외가 10번 실행될때까지 반복
             words = mecab.pos(sent, join=True)
             word_list = []
             for w in words:
-                #print(w, w.split('/')[0], len(w.split('/')[0]))
                 if len(w.split('/')[0]) > 1:  # 한글자 제거
                     if ('/NNP' in w or '/NNG' in w):
                         word_list.append(w)
@@ -86,7 +77,4 @@ while except_count <= 10:  # 예외가 10번 실행될때까지 반복
     except Exception as e:
         except_count += 1
         print(list_number, '예외가 발생했습니다.', e, except_count)
-        # with open('exception_list.csv', 'a', newline='') as el:
-        #     el = csv.writer(el)
-        #     el.writerow([list_number, e, except_count])
         list_number += 1
