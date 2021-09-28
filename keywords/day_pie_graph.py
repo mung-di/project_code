@@ -23,9 +23,9 @@ try:
 
         df = pd.DataFrame(circle)
         fig = px.pie(df, values='count(petition.no)', names='name')
-        fig.show()
+        # fig.show()
 
-
+        pie_json = fig.to_json()
 
 
 finally:
