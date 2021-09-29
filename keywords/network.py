@@ -5,6 +5,7 @@ import operator
 import numpy as np
 import json
 import plotly.graph_objects as go
+import csv
 
 if __name__ == '__main__':
     # 단어쌍 동시출현 빈도수를 담았던 networkx.csv파일을 불러온다.
@@ -30,8 +31,6 @@ if __name__ == '__main__':
     sorted_egv = sorted(egv.items(), key=operator.itemgetter(1), reverse=True)
     sorted_pgr = sorted(pgr.items(), key=operator.itemgetter(1), reverse=True)
 
-    # print(sorted_pgr)
-
     # 단어 네트워크를 그려줄 Graph 선언
     G = nx.Graph()
 
@@ -44,7 +43,10 @@ if __name__ == '__main__':
         G.add_weighted_edges_from([(dataset['word1'][ind], dataset['word2'][ind], int(dataset['freq'][ind]))])
 
     # 노드 크기 조정
-    sizes = [G.nodes[node]['nodesize'] * 500 for node in G]
+    _sizes = [G.nodes[node]['nodesize'] * 500 for node in G]
+    sizes = []
+    for s in _sizes:
+        sizes.append(np.log10(s)*20)
 
     options = {
         'edge_color': '#FFDEA2',
@@ -52,24 +54,19 @@ if __name__ == '__main__':
         'with_labels': True,
         'font_weight': 'regular',
     }
-    pos =nx.spring_layout(G,k=3.5,iterations=100)
+    pos = nx.spring_layout(G,k=3.5,iterations=100)
 
     for node in G.nodes:
         G.nodes[node]['pos'] = list(pos[node])
-
-
+        # nx.draw(G,node_size = sizes, pos =nx.spring_layout(G,k=3.5,iterations=100) )
 
     edge_x = []
     edge_y = []
     # print(G.edges)
 
     for edge in G.edges():
-        if G.edges()[edge]['weight'] > 0:
-            char_1 = edge[0]
-            char_2 = edge[1]
         x0, y0 = G.nodes[edge[0]]['pos']
         x1, y1 = G.nodes[edge[1]]['pos']
-        text = char_1 + '--' + char_2 + ': ' + str(G.edges()[edge]['weight'])
         edge_x.append(x0)
         edge_x.append(x1)
         edge_x.append(None)
@@ -85,17 +82,15 @@ if __name__ == '__main__':
 
         node_x = []
         node_y = []
-        # print(text)
         for node in G.nodes():
             x, y = G.nodes[node]['pos']
             node_x.append(x)
             node_y.append(y)
 
-
         node_trace = go.Scatter(
-            x=node_x, y=node_y, text =text,
-            mode='markers +text',
-            hoverinfo='text', #hover했을때 보이는 건데 x ,y,z, text, name 다 아님 ㅠㅠ
+            x=node_x, y=node_y,
+            mode='markers ,text',
+            hoverinfo='text',
             marker=dict(
                 showscale=True,
                 # colorscale options
@@ -108,7 +103,7 @@ if __name__ == '__main__':
                 size=sizes,
                 colorbar=dict(
                     thickness=15,
-                    title='',
+                    title='Node Connections',
                     xanchor='left',
                     titleside='right'
                 ),
@@ -118,21 +113,22 @@ if __name__ == '__main__':
         node_text = []
         for node, adjacencies in enumerate(G.adjacency()):
             node_adjacencies.append(len(adjacencies[1]))
-            node_text.append('# of connections: ' + str(len(adjacencies[1])))
 
+            #노드 호버 할 때 나타나는 텍스트
+            node_text.append(sorted_pgr[node][0])
         node_trace.marker.color = node_adjacencies
         node_trace.text = node_text
 
         fig = go.Figure(data=[edge_trace, node_trace],
                         layout=go.Layout(
-                            title='Network Graph',
-                            titlefont_size=16,
                             showlegend=False,
                             hovermode='closest',
                             margin=dict(b=20, l=5, r=5, t=40),
                             xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                             yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                         )
+        # print(fig.to_json())
 
-    # print(fig.to_json())
+    fig.for_each_trace(lambda t: t.update(textfont_color='forestgreen', textposition='top center'))
+    print(fig.to_json())
     fig.show()
