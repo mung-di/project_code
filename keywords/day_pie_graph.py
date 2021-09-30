@@ -23,14 +23,17 @@ try:
 
         df = pd.DataFrame(circle)
         df.rename(columns={'name' : '카테고리', 'count(petition.no)' : '글 수'}, inplace=True)
-        fig = px.pie(df, values='글 수', names='카테고리' )
+        fig = px.pie(df, values='글 수', names='카테고리')
+        fig.update_traces(textposition='inside' , textinfo='percent+label')
         #상세페이지용 범례있는 그래프
         pie_json = fig.to_json()
+        fig.show()
 
 
         fig.update(layout_showlegend=False)
         #메인용 범례없는 그래프
         main_pie = fig.to_json()
+        fig.show()
 
 
 

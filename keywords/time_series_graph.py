@@ -46,6 +46,7 @@ try:
 
                 if final_data == row: #이번주차
                     draw_graph()
+
                 else: #이번주 제외 3주
                     if last_date.isocalendar()[1] == subdate.isocalendar()[1]:
                         word_list += words
