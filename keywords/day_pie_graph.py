@@ -22,10 +22,17 @@ try:
 
 
         df = pd.DataFrame(circle)
-        fig = px.pie(df, values='count(petition.no)', names='name')
-        # fig.show()
-
+        df.rename(columns={'name' : '카테고리', 'count(petition.no)' : '글 수'}, inplace=True)
+        fig = px.pie(df, values='글 수', names='카테고리' )
+        #상세페이지용 범례있는 그래프
         pie_json = fig.to_json()
+
+
+        fig.update(layout_showlegend=False)
+        #메인용 범례없는 그래프
+        main_pie = fig.to_json()
+
+
 
 
 finally:
