@@ -45,7 +45,7 @@ try:
             if subdate.isocalendar()[1] >= final_data['subdate'].isocalendar()[1] - 4 : # 최근 4주치 그래프만 나타내기 위해
 
                 if final_data == row: #이번주차
-                    graph_list.append(draw_graph())
+                    graph_list.append('graph:'+draw_graph()) # 구분자 추가
 
 
 
@@ -55,7 +55,7 @@ try:
 
                     elif last_date.isocalendar()[1] != subdate.isocalendar()[1]:
                         if word_list != "":
-                            graph_list.append(draw_graph())
+                            graph_list.append('graph:'+draw_graph()) # 구분자 추가 ex)split시 ,graph:로 하면 될 것 같음!!
 
 
 
