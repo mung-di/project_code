@@ -19,6 +19,7 @@ try:
         cursor.execute(sql)
         rows = cursor.fetchall()
 
+        # daydata의 마지막 data를 가져오기 위해 subdate역순 정렬 제한 1줘서 가져옴
         sql1 = "select subdate,data from daydata order by subdate desc limit 1"
         cursor.execute(sql1)
         final_data = cursor.fetchone()
@@ -26,8 +27,8 @@ try:
         for row in rows:
             words = row['data']
             subdate = row['subdate']
-
-            if subdate.month >= final_data['subdate'].month - 1:  # 최근 2달치 그래프만 나타내기 위해
+            # 최근 2달치 그래프만 나타내기 위해 month형식 이용해 분리
+            if subdate.month >= final_data['subdate'].month - 1:
 
                 if final_data == row:
                     word = word_list.split(',')
