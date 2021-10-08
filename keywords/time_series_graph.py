@@ -42,7 +42,7 @@ try:
         for row in rows:
             words = row['data']
             subdate = row['subdate']
-            # 최근 4주치 그래프만 나타내기 위해
+            # 최근 4주치 그래프만 나타내기 위해 isocalendar(0)[1] 사용해 조건 줌 . isocalendar : 1년을 52주로 나타낸 데이터 0:연도 1:주차 2:요일
             if subdate.isocalendar()[1] >= final_data['subdate'].isocalendar()[1] - 4 :
 
                 if final_data.isocalendar()[1] == row.isocalendar()[1]: #이번주차
