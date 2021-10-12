@@ -57,7 +57,6 @@ try:
                             graph_list.append(draw_graph())
 
 
-
                     word_list = ""
                     word_list += words
 
